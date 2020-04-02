@@ -31,6 +31,13 @@ app.post('/messages/save', function (req, res) {
     res.send('Saved');
 });
 
+app.delete('/messages/delete', function (req, res) {
+    console.log('Delete history');
+    console.log(req.body);
+    fs.unlink('./' + req.body.firstUser + '_' + req.body.secondUser + '.json', (err) => {});
+    res.send('Deleted');
+});
+
 const server = app.listen(4200, function() {
    const host = server.address().address;
    const port = server.address().port;
