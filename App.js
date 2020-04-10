@@ -37,6 +37,11 @@ app.delete('/messages', function (req, res) {
   res.send('Deleted');
 });
 
+app.post('/login', function (req, res) {
+  console.log('body is ', req.body);
+  res.send('true');
+});
+
 const server = app.listen(4200, function () {
   const host = server.address().address;
   const port = server.address().port;
