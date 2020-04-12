@@ -42,6 +42,11 @@ app.post('/login', function (req, res) {
   res.send('true');
 });
 
+app.post('/signup', function (req, res) {
+  fs.writeFileSync('./database/credentials.json', JSON.stringify(req.body))
+  res.send('created');
+});
+
 const server = app.listen(4200, function () {
   const host = server.address().address;
   const port = server.address().port;
