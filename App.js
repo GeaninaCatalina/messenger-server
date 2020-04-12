@@ -20,7 +20,7 @@ app.use(function (req, res, next) {
 app.post('/messages', function (req, res) {
   const users = req.body;
   try {
-    const data = fs.readFileSync(users.firstUser + '_' + users.secondUser + '.json');
+    const data = fs.readFileSync('./history/' + users.firstUser + '_' + users.secondUser + '.json');
     res.send(JSON.parse(data));
   } catch (error) {
     res.send([]);
@@ -28,12 +28,12 @@ app.post('/messages', function (req, res) {
 });
 
 app.post('/messages/save', function (req, res) {
-  fs.writeFileSync(req.body.firstUser + '_' + req.body.secondUser + '.json', JSON.stringify(req.body.messages))
+  fs.writeFileSync('./history/' + req.body.firstUser + '_' + req.body.secondUser + '.json', JSON.stringify(req.body.messages))
   res.send('Saved');
 });
 
 app.delete('/messages', function (req, res) {
-  fs.unlinkSync('./' + req.body.firstUser + '_' + req.body.secondUser + '.json', (err) => { });
+  fs.unlinkSync('./history/' + req.body.firstUser + '_' + req.body.secondUser + '.json', (err) => { });
   res.send('Deleted');
 });
 
