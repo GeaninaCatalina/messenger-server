@@ -43,7 +43,16 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/signup', function (req, res) {
-  fs.writeFileSync('./database/credentials.json', JSON.stringify(req.body))
+  const data = JSON.parse(fs.readFileSync('./database/credentials.json'));
+  const newUser = req.body;
+
+  const found = data.map(element => element.user).filter(element => element === newUser.user);
+  if (found.length > 0) {
+    res.status(400).send('There is already a user with this username. Try a different one!');
+  }
+
+  data.push(req.body);
+  fs.writeFileSync('./database/credentials.json', JSON.stringify(data));
   res.send('created');
 });
 
