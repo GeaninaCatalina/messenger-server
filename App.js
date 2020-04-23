@@ -38,8 +38,12 @@ app.delete('/messages', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
-  console.log('body is ', req.body);
-  res.send('true');
+  const username = req.body.user;
+  const password = req.body.password;
+  const data = JSON.parse(fs.readFileSync('./database/credentials.json'));
+  console.log('body is ', req.body, username, password );
+  
+  res.send(true);
 });
 
 app.post('/signup', function (req, res) {
