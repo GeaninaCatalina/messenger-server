@@ -41,9 +41,14 @@ app.post('/login', function (req, res) {
   const username = req.body.user;
   const password = req.body.password;
   const data = JSON.parse(fs.readFileSync('./database/credentials.json'));
-  console.log('body is ', req.body, username, password );
-  
-  res.send(true);
+
+  const found = data.filter(element => element.user === username && element.password === password);
+
+  if (found.length === 0) {
+    res.send(false);
+  } else {
+    res.send(true);
+  }
 });
 
 app.post('/signup', function (req, res) {

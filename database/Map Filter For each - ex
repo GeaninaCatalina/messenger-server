@@ -1,0 +1,15 @@
+const people = [
+    {name: 'dan', age: 18, id: '111'},
+    {name: 'dan2', age: 20, id: '657'},
+    {name: 'dan3', age: 30, id: '435'},
+    {name: 'dan4', age: 40, id: '32'}
+]
+
+people.map(child => child.name) => [{name: dan}, {name: dan2}, {name: dan3}, {name: dan4}]
+
+people.filter(element => element.age < 21) => [
+    {name: 'dan', age: 18, id: '111'},
+    {name: 'dan2', age: 20, id: '657'}
+]
+
+people.forEach(person => console.log(person))
