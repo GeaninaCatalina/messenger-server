@@ -1,6 +1,9 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const http = require('http'); 
+const socketIo = require('socket.io');
+
 app.use(express.json());
 
 app.use(function (req, res, next) {
@@ -31,6 +34,27 @@ app.post('/messages/save', function (req, res) {
   fs.writeFileSync('./history/' + req.body.firstUser + '_' + req.body.secondUser + '.json', JSON.stringify(req.body.messages))
   res.send('Saved');
 });
+
+app.post('/messages/global', function (req, res) { // req = {user: '', message: ''}
+  try {
+    // stocare in baza de date
+    console.log('receiving message ' + req)
+    io.emit('new-global-message', req)
+    res.send(JSON.parse(data));
+  } catch (error) {
+    res.send([]);
+  }
+});
+
+app.get('/messages/global', function (req, res) { // req = {user: '', message: ''}
+  try {
+    // incarcare din db
+    res.send(JSON.parse([]));
+  } catch (error) {
+    res.send([]);
+  }
+});
+
 
 app.delete('/messages', function (req, res) {
   fs.unlinkSync('./history/' + req.body.firstUser + '_' + req.body.secondUser + '.json', (err) => { });
@@ -65,9 +89,20 @@ app.post('/signup', function (req, res) {
   res.send('created');
 });
 
+
 const server = app.listen(4200, function () {
   const host = server.address().address;
   const port = server.address().port;
 
   console.log("Example app listening at http://%s:%s", host, port);
 });
+
+const io = socketIo(server);
+
+io.on('connection', (socket) => {
+  console.log('New user connected!');
+})
+
+io.on('testing-connection', (data) => {
+  console.log('Data received' + data);
+})
