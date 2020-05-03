@@ -1,10 +1,17 @@
 const fs = require('fs');
 const express = require('express');
-const app = express();
 const http = require('http'); 
-const socketIo = require('socket.io');
+const socketIO = require('socket.io'); 
+const mongoose = require('mongoose'); 
+const bodyParser = require('body-parser');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
 
 app.use(express.json());
+app.use(bodyParser.json()); 
 
 app.use(function (req, res, next) {
   const allowedOrigins = ['http://127.0.0.1:4200', 'http://localhost:3000'];
@@ -20,6 +27,14 @@ app.use(function (req, res, next) {
   return next();
 });
 
+io.on('connection', () => {
+  console.log('New user connected!');
+})
+
+io.on('testing-connection', (data) => {
+  console.log('Data received' + data);
+})
+
 app.post('/messages', function (req, res) {
   const users = req.body;
   try {
@@ -33,26 +48,6 @@ app.post('/messages', function (req, res) {
 app.post('/messages/save', function (req, res) {
   fs.writeFileSync('./history/' + req.body.firstUser + '_' + req.body.secondUser + '.json', JSON.stringify(req.body.messages))
   res.send('Saved');
-});
-
-app.post('/messages/global', function (req, res) { // req = {user: '', message: ''}
-  try {
-    // stocare in baza de date
-    console.log('receiving message ' + req)
-    io.emit('new-global-message', req)
-    res.send(JSON.parse(data));
-  } catch (error) {
-    res.send([]);
-  }
-});
-
-app.get('/messages/global', function (req, res) { // req = {user: '', message: ''}
-  try {
-    // incarcare din db
-    res.send(JSON.parse([]));
-  } catch (error) {
-    res.send([]);
-  }
 });
 
 
@@ -89,20 +84,42 @@ app.post('/signup', function (req, res) {
   res.send('created');
 });
 
+//Global Messages 
 
-const server = app.listen(4200, function () {
+let Messages = mongoose.model('Messages', {
+  name: String, 
+  message: String
+})
+
+const dbUrl = 'mongodb://sneaky:messages1@ds153556.mlab.com:53556/messages'; 
+
+mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology : true} ) 
+
+app.get('/messages/global', (req,res) => {
+  Messages.find({}, (err, message) => {
+    res.send(message); 
+  })
+}) 
+
+
+app.post('/messages/global', function (req, res) {
+  let message = new Messages(req.body); 
+  
+  message.save((err) => {
+    if(err) 
+      sendStatus(500); 
+    console.log('broadcasting message');
+    io.sockets.emit('message', req.body);  
+    res.sendStatus(200); 
+  })
+});
+
+// End Global  
+
+
+server.listen(4200, function () {
   const host = server.address().address;
   const port = server.address().port;
 
   console.log("Example app listening at http://%s:%s", host, port);
 });
-
-const io = socketIo(server);
-
-io.on('connection', (socket) => {
-  console.log('New user connected!');
-})
-
-io.on('testing-connection', (data) => {
-  console.log('Data received' + data);
-})
