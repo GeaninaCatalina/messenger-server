@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const dbUrl = require('./db.conection.json').url;
 
 
 app.use(express.json());
@@ -91,7 +92,7 @@ let Messages = mongoose.model('Messages', {
   message: String
 })
 
-const dbUrl = 'mongodb://sneaky:messages1@ds153556.mlab.com:53556/messages'; 
+const dbUrl = ''; 
 
 mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology : true} ) 
 
