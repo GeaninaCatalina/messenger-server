@@ -92,8 +92,6 @@ let Messages = mongoose.model('Messages', {
   message: String
 })
 
-const dbUrl = ''; 
-
 mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology : true} ) 
 
 app.get('/messages/global', (req,res) => {
